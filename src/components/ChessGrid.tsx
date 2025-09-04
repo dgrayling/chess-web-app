@@ -27,6 +27,8 @@ export default function ChessGrid() {
           display: "grid",
           gridTemplateColumns: `repeat(${size}, 100px)`,
           gridTemplateRows: `repeat(${size}, 100px)`,
+          gap: "2px",
+          background: "black",
         }}
       >
         {boardMatrix.map((row) =>
