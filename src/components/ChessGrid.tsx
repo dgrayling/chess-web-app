@@ -14,152 +14,71 @@ export type ChessSquareState =
   | { status: "empty" }
   | { status: "occupied"; piece: { type: PieceType; color: PieceColor } };
 
-type ChessSquare = ChessSquareImmutable & {
-  state: ChessSquareState;
-};
-
-const matrix: ChessSquare[][] = Array.from({ length: size }, (_, rowIndex) =>
-  Array.from({ length: size }, (_, colIndex) => ({
-    row: rowIndex,
-    column: colIndex,
-    id: `${rowIndex}${colIndex}`,
-    state: { status: "empty" },
-  }))
+const boardMatrix: ChessSquareImmutable[][] = Array.from(
+  { length: size },
+  (_, rowIndex) =>
+    Array.from({ length: size }, (_, colIndex) => ({
+      row: rowIndex,
+      column: colIndex,
+      id: `${rowIndex}${colIndex}`,
+    }))
 );
 
-matrix[6][0].state = {
-  status: "occupied",
-  piece: { type: "Pawn", color: "White" },
-};
-matrix[6][1].state = {
-  status: "occupied",
-  piece: { type: "Pawn", color: "White" },
-};
-matrix[6][2].state = {
-  status: "occupied",
-  piece: { type: "Pawn", color: "White" },
-};
-matrix[6][3].state = {
-  status: "occupied",
-  piece: { type: "Pawn", color: "White" },
-};
-matrix[6][4].state = {
-  status: "occupied",
-  piece: { type: "Pawn", color: "White" },
-};
-matrix[6][5].state = {
-  status: "occupied",
-  piece: { type: "Pawn", color: "White" },
-};
-matrix[6][6].state = {
-  status: "occupied",
-  piece: { type: "Pawn", color: "White" },
-};
-matrix[6][7].state = {
-  status: "occupied",
-  piece: { type: "Pawn", color: "White" },
-};
+const positionState: [number, number, PieceColor, PieceType][] = [
+  [7, 0, "White", "Rook"],
+  [7, 7, "White", "Rook"],
+  [0, 0, "Black", "Rook"],
+  [0, 7, "Black", "Rook"],
+  [7, 1, "White", "Knight"],
+  [7, 6, "White", "Knight"],
+  [0, 1, "Black", "Knight"],
+  [0, 6, "Black", "Knight"],
+  [7, 2, "White", "Bishop"],
+  [7, 5, "White", "Bishop"],
+  [0, 2, "Black", "Bishop"],
+  [0, 5, "Black", "Bishop"],
+  [7, 3, "White", "Queen"],
+  [0, 3, "Black", "Queen"],
+  [7, 4, "White", "King"],
+  [0, 4, "Black", "King"],
+  [6, 0, "White", "Pawn"],
+  [6, 1, "White", "Pawn"],
+  [6, 2, "White", "Pawn"],
+  [6, 3, "White", "Pawn"],
+  [6, 4, "White", "Pawn"],
+  [6, 5, "White", "Pawn"],
+  [6, 6, "White", "Pawn"],
+  [6, 7, "White", "Pawn"],
+  [1, 0, "Black", "Pawn"],
+  [1, 1, "Black", "Pawn"],
+  [1, 2, "Black", "Pawn"],
+  [1, 3, "Black", "Pawn"],
+  [1, 4, "Black", "Pawn"],
+  [1, 5, "Black", "Pawn"],
+  [1, 6, "Black", "Pawn"],
+  [1, 7, "Black", "Pawn"],
+];
 
-matrix[1][0].state = {
-  status: "occupied",
-  piece: { type: "Pawn", color: "Black" },
-};
-matrix[1][1].state = {
-  status: "occupied",
-  piece: { type: "Pawn", color: "Black" },
-};
-matrix[1][2].state = {
-  status: "occupied",
-  piece: { type: "Pawn", color: "Black" },
-};
-matrix[1][3].state = {
-  status: "occupied",
-  piece: { type: "Pawn", color: "Black" },
-};
-matrix[1][4].state = {
-  status: "occupied",
-  piece: { type: "Pawn", color: "Black" },
-};
-matrix[1][5].state = {
-  status: "occupied",
-  piece: { type: "Pawn", color: "Black" },
-};
-matrix[1][6].state = {
-  status: "occupied",
-  piece: { type: "Pawn", color: "Black" },
-};
-matrix[1][7].state = {
-  status: "occupied",
-  piece: { type: "Pawn", color: "Black" },
-};
+const generateStateMatrix = () => {
+  const stateMatrix: ChessSquareState[][] = Array.from({ length: size }, () =>
+    Array.from({ length: size }, () => ({
+      status: "empty",
+    }))
+  );
 
-matrix[0][0].state = {
-  status: "occupied",
-  piece: { type: "Rook", color: "White" },
-};
-matrix[0][1].state = {
-  status: "occupied",
-  piece: { type: "Knight", color: "White" },
-};
-matrix[0][2].state = {
-  status: "occupied",
-  piece: { type: "Bishop", color: "White" },
-};
-matrix[0][3].state = {
-  status: "occupied",
-  piece: { type: "Queen", color: "White" },
-};
-matrix[0][4].state = {
-  status: "occupied",
-  piece: { type: "King", color: "White" },
-};
-matrix[0][5].state = {
-  status: "occupied",
-  piece: { type: "Bishop", color: "White" },
-};
-matrix[0][6].state = {
-  status: "occupied",
-  piece: { type: "Knight", color: "White" },
-};
-matrix[0][7].state = {
-  status: "occupied",
-  piece: { type: "Rook", color: "White" },
-};
+  positionState.forEach(([row, column, color, type]) => {
+    stateMatrix[row][column] = {
+      status: "occupied",
+      piece: { type, color },
+    };
+  });
 
-matrix[7][0].state = {
-  status: "occupied",
-  piece: { type: "Rook", color: "Black" },
-};
-matrix[7][1].state = {
-  status: "occupied",
-  piece: { type: "Knight", color: "Black" },
-};
-matrix[7][2].state = {
-  status: "occupied",
-  piece: { type: "Bishop", color: "Black" },
-};
-matrix[7][3].state = {
-  status: "occupied",
-  piece: { type: "Queen", color: "Black" },
-};
-matrix[7][4].state = {
-  status: "occupied",
-  piece: { type: "King", color: "Black" },
-};
-matrix[7][5].state = {
-  status: "occupied",
-  piece: { type: "Bishop", color: "Black" },
-};
-matrix[7][6].state = {
-  status: "occupied",
-  piece: { type: "Knight", color: "Black" },
-};
-matrix[7][7].state = {
-  status: "occupied",
-  piece: { type: "Rook", color: "Black" },
+  return stateMatrix;
 };
 
 export default function ChessGrid() {
+  const stateMatrix = generateStateMatrix();
+
   return (
     <div
       style={{
@@ -168,9 +87,13 @@ export default function ChessGrid() {
         gridTemplateRows: `repeat(${size}, 100px)`,
       }}
     >
-      {matrix.map((row) =>
+      {boardMatrix.map((row) =>
         row.map((cell) => (
-          <ChessSquare key={cell.id} {...cell} state={cell.state} />
+          <ChessSquare
+            key={cell.id}
+            {...cell}
+            state={stateMatrix[cell.row][cell.column]}
+          />
         ))
       )}
     </div>
