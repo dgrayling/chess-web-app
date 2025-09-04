@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { ChessBoardContext } from "../components/ChessBoardContext";
 
 const size = 8;
@@ -60,15 +61,39 @@ const generateBoard = () => {
   return stateMatrix;
 };
 
-const board = generateBoard();
-
-const movePiece = () => {};
+const initialBoard = generateBoard();
 
 export const ChessBoardProvider = ({
   children,
 }: {
   children: React.ReactNode;
 }) => {
+  const [board, setBoard] = useState(initialBoard);
+
+  const movePiece = (
+    from: { row: number; column: number },
+    to: { row: number; column: number }
+  ) => {
+    const boardClone = [...board];
+    const chessSquareState = boardClone[from.row][from.column];
+
+    if (chessSquareState.status === "empty") {
+      return;
+    }
+
+    if (boardClone[to.row][to.column].status === "occupied") {
+      return;
+    }
+
+    boardClone[from.row][from.column] = { status: "empty" };
+    boardClone[to.row][to.column] = {
+      status: "occupied",
+      piece: chessSquareState.piece,
+    };
+
+    setBoard(boardClone);
+  };
+
   return (
     <ChessBoardContext.Provider value={{ board, movePiece }}>
       {children}

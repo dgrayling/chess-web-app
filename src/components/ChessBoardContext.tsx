@@ -1,11 +1,11 @@
 import React from "react";
-import type { ChessSquareState } from "./ChessGrid";
+import type { ChessSquareState } from "../types/chess";
 
 export type ChessBoardContextType = {
   board: ChessSquareState[][];
   movePiece: (
-    from: { row: number; col: number },
-    to: { row: number; col: number }
+    from: { row: number; column: number },
+    to: { row: number; column: number }
   ) => void;
 };
 
