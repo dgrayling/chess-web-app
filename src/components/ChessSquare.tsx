@@ -1,4 +1,9 @@
-import type { ChessSquareState } from "./ChessGrid";
+import { useContext } from "react";
+import {
+  ChessBoardContext,
+  type ChessBoardContextType,
+} from "./ChessBoardContext";
+import type { ChessSquareImmutable, ChessSquareState } from "./ChessGrid";
 
 const filePathPrefix = "/src/assets/chess-pieces/";
 
@@ -28,11 +33,13 @@ function convertChessSquareStateToImage(state: ChessSquareState) {
   }
 }
 
-export default function ChessSquare({ state }: { state: ChessSquareState }) {
-  const imageSrc = convertChessSquareStateToImage(state);
+export default function ChessSquare({ row, column }: ChessSquareImmutable) {
+  const context = useContext<ChessBoardContextType>(ChessBoardContext);
+
+  const imageSrc = convertChessSquareStateToImage(context.board[row][column]);
 
   if (!imageSrc) {
-    return <div>Status: {state.status}</div>;
+    return <div>Status: {context.board[row][column].status}</div>;
   }
 
   return <div>{imageSrc ? <img src={imageSrc} alt=""></img> : null}</div>;

@@ -1,8 +1,9 @@
+import { ChessBoardContext } from "./ChessBoardContext";
 import ChessSquare from "./ChessSquare";
 
 const size = 8;
 
-type ChessSquareImmutable = {
+export type ChessSquareImmutable = {
   row: number;
   column: number;
   id: string;
@@ -80,22 +81,20 @@ export default function ChessGrid() {
   const stateMatrix = generateStateMatrix();
 
   return (
-    <div
-      style={{
-        display: "grid",
-        gridTemplateColumns: `repeat(${size}, 100px)`,
-        gridTemplateRows: `repeat(${size}, 100px)`,
-      }}
+    <ChessBoardContext.Provider
+      value={{ board: stateMatrix, movePiece: () => {} }}
     >
-      {boardMatrix.map((row) =>
-        row.map((cell) => (
-          <ChessSquare
-            key={cell.id}
-            {...cell}
-            state={stateMatrix[cell.row][cell.column]}
-          />
-        ))
-      )}
-    </div>
+      <div
+        style={{
+          display: "grid",
+          gridTemplateColumns: `repeat(${size}, 100px)`,
+          gridTemplateRows: `repeat(${size}, 100px)`,
+        }}
+      >
+        {boardMatrix.map((row) =>
+          row.map((cell) => <ChessSquare key={cell.id} {...cell} />)
+        )}
+      </div>
+    </ChessBoardContext.Provider>
   );
 }
