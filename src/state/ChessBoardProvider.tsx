@@ -94,8 +94,12 @@ export const ChessBoardProvider = ({
     setBoard(boardClone);
   };
 
+  const trackClick = (row: number, column: number) => {
+    console.log(row, column);
+  };
+
   return (
-    <ChessBoardContext.Provider value={{ board, movePiece }}>
+    <ChessBoardContext.Provider value={{ board, movePiece, trackClick }}>
       {children}
     </ChessBoardContext.Provider>
   );

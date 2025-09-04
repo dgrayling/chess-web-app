@@ -48,12 +48,8 @@ export default function ChessSquare({ row, column }: ChessSquareImmutable) {
 
   const imageSrc = convertChessSquareStateToImage(context.board[row][column]);
 
-  if (!imageSrc) {
-    return <div style={style}>Status: {context.board[row][column].status}</div>;
-  }
-
   return (
-    <div style={style}>
+    <div style={style} onClick={() => context.trackClick(row, column)}>
       {imageSrc ? <img src={imageSrc} alt=""></img> : null}
     </div>
   );

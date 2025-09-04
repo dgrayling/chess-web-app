@@ -7,9 +7,11 @@ export type ChessBoardContextType = {
     from: { row: number; column: number },
     to: { row: number; column: number }
   ) => void;
+  trackClick: (row: number, column: number) => void;
 };
 
 export const ChessBoardContext = React.createContext<ChessBoardContextType>({
   board: [],
   movePiece: () => {},
+  trackClick: () => {},
 });
