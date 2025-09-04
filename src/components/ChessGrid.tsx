@@ -1,6 +1,6 @@
 import ChessSquare from "./ChessSquare";
 
-const size = 10;
+const size = 8;
 
 type Cell = {
   row: number;
@@ -10,8 +10,8 @@ type Cell = {
 
 const matrix: Cell[][] = Array.from({ length: size }, (_, rowIndex) =>
   Array.from({ length: size }, (_, colIndex) => ({
-    row: rowIndex, // rows 1..10
-    column: colIndex, // cols 1..10
+    row: rowIndex,
+    column: colIndex,
     id: `${rowIndex}${colIndex}`,
   }))
 );
