@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useCallback, useEffect, useReducer, useState } from "react";
 import { ChessBoardContext } from "../components/ChessBoardContext";
 
 const size = 8;
@@ -70,32 +70,69 @@ export const ChessBoardProvider = ({
 }) => {
   const [board, setBoard] = useState(initialBoard);
 
-  const movePiece = (
-    from: { row: number; column: number },
-    to: { row: number; column: number }
-  ) => {
-    const boardClone = [...board];
-    const chessSquareState = boardClone[from.row][from.column];
+  const movePiece = useCallback(
+    (
+      from: { row: number; column: number },
+      to: { row: number; column: number }
+    ) => {
+      setBoard((currentBoard) => {
+        const boardClone = currentBoard.map((row) => [...row]);
+        const fromState = boardClone[from.row][from.column];
+        const toState = boardClone[to.row][to.column];
 
-    if (chessSquareState.status === "empty") {
-      return;
+        if (fromState.status === "empty") {
+          return currentBoard;
+        }
+
+        if (toState.status === "occupied") {
+          return currentBoard;
+        }
+
+        boardClone[from.row][from.column] = { status: "empty" };
+        boardClone[to.row][to.column] = {
+          status: "occupied",
+          piece: fromState.piece,
+        };
+
+        return boardClone;
+      });
+    },
+    []
+  );
+
+  interface SquarePosition {
+    row: number;
+    column: number;
+  }
+
+  type Action =
+    | { type: "click"; row: number; column: number }
+    | { type: "reset" };
+
+  const [previousSquares, dispatch] = useReducer(
+    (state: SquarePosition[], action: Action): SquarePosition[] => {
+      switch (action.type) {
+        case "click":
+          return [...state, { row: action.row, column: action.column }];
+        case "reset":
+          return [];
+        default:
+          return state;
+      }
+    },
+    [] as SquarePosition[]
+  );
+
+  useEffect(() => {
+    console.log("previousSquares", previousSquares);
+    if (previousSquares.length === 2) {
+      movePiece(previousSquares[0], previousSquares[1]);
+      dispatch({ type: "reset" });
     }
-
-    if (boardClone[to.row][to.column].status === "occupied") {
-      return;
-    }
-
-    boardClone[from.row][from.column] = { status: "empty" };
-    boardClone[to.row][to.column] = {
-      status: "occupied",
-      piece: chessSquareState.piece,
-    };
-
-    setBoard(boardClone);
-  };
+  }, [previousSquares, movePiece]);
 
   const trackClick = (row: number, column: number) => {
-    console.log(row, column);
+    dispatch({ type: "click", row, column });
   };
 
   return (
