@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useReducer, useState } from "react";
+import { useCallback, useState } from "react";
 import { ChessBoardContext } from "../components/ChessBoardContext";
 
 const size = 8;
@@ -100,39 +100,18 @@ export const ChessBoardProvider = ({
     []
   );
 
-  interface SquarePosition {
+  const [clickedSquare, setClickedSquare] = useState<{
     row: number;
     column: number;
-  }
-
-  type Action =
-    | { type: "click"; row: number; column: number }
-    | { type: "reset" };
-
-  const [previousSquares, dispatch] = useReducer(
-    (state: SquarePosition[], action: Action): SquarePosition[] => {
-      switch (action.type) {
-        case "click":
-          return [...state, { row: action.row, column: action.column }];
-        case "reset":
-          return [];
-        default:
-          return state;
-      }
-    },
-    [] as SquarePosition[]
-  );
-
-  useEffect(() => {
-    console.log("previousSquares", previousSquares);
-    if (previousSquares.length === 2) {
-      movePiece(previousSquares[0], previousSquares[1]);
-      dispatch({ type: "reset" });
-    }
-  }, [previousSquares, movePiece]);
+  } | null>(null);
 
   const trackClick = (row: number, column: number) => {
-    dispatch({ type: "click", row, column });
+    if (clickedSquare) {
+      movePiece(clickedSquare, { row, column });
+      setClickedSquare(null);
+    } else if (board[row][column].status === "occupied") {
+      setClickedSquare({ row, column });
+    }
   };
 
   return (
