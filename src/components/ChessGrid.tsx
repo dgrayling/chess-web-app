@@ -1,32 +1,33 @@
-import { squareGenerator } from "../utils/squareGenerator";
-import ChessSquare from "./ChessSquare.tsx";
+import ChessSquare from "./ChessSquare";
 
-const generateSquares = () => {
-  const squares: Record<string, { row: number; column: number }> = {};
+const size = 10;
 
-  Array.from({ length: 100 }, (_, i) => {
-    const square = squareGenerator().next().value;
-    const index = i.toString();
-    squares[index] = square;
-  });
-
-  return squares;
+type Cell = {
+  row: number;
+  column: number;
+  id: string;
 };
 
-const squares = generateSquares();
+const matrix: Cell[][] = Array.from({ length: size }, (_, rowIndex) =>
+  Array.from({ length: size }, (_, colIndex) => ({
+    row: rowIndex, // rows 1..10
+    column: colIndex, // cols 1..10
+    id: `${rowIndex}${colIndex}`,
+  }))
+);
 
 export default function ChessGrid() {
   return (
     <div
       style={{
         display: "grid",
-        gridTemplateColumns: "repeat(10, 100px)",
-        gridTemplateRows: "repeat(10, 100px)",
+        gridTemplateColumns: `repeat(${size}, 100px)`,
+        gridTemplateRows: `repeat(${size}, 100px)`,
       }}
     >
-      {Object.entries(squares).map(([key, value]) => (
-        <ChessSquare key={key} row={value.row} column={value.column} />
-      ))}
+      {matrix.map((row) =>
+        row.map((cell) => <ChessSquare key={cell.id} {...cell} />)
+      )}
     </div>
   );
 }
