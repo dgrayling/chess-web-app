@@ -5,9 +5,15 @@ const size = 8;
 
 type PieceType = "Pawn" | "Rook" | "Knight" | "Bishop" | "Queen" | "King";
 type PieceColor = "White" | "Black";
-export type ChessSquareState =
+export type ChessSquareStatus =
   | { status: "empty" }
   | { status: "occupied"; piece: { type: PieceType; color: PieceColor } };
+
+type ChessSquareState = {
+  row: number;
+  column: number;
+  status: ChessSquareStatus;
+};
 
 const positionState: [number, number, PieceColor, PieceType][] = [
   [7, 0, "White", "Rook"],
@@ -45,7 +51,7 @@ const positionState: [number, number, PieceColor, PieceType][] = [
 ];
 
 const generateBoard = () => {
-  const stateMatrix: ChessSquareState[][] = Array.from({ length: size }, () =>
+  const stateMatrix: ChessSquareStatus[][] = Array.from({ length: size }, () =>
     Array.from({ length: size }, () => ({
       status: "empty",
     }))
@@ -63,6 +69,28 @@ const generateBoard = () => {
 
 const initialBoard = generateBoard();
 
+function calculateValidityOfMove(
+  fromState: ChessSquareState,
+  toState: ChessSquareState
+) {
+  if (fromState.status.status === "empty") {
+    return false;
+  }
+
+  if (toState.status.status === "occupied") {
+    return false;
+  }
+
+  // Rooks can move horizontally and vertically
+  if (fromState.status.piece.type === "Rook") {
+    if (fromState.row !== toState.row && fromState.column !== toState.column) {
+      return false;
+    }
+  }
+
+  return true;
+}
+
 export const ChessBoardProvider = ({
   children,
 }: {
@@ -71,28 +99,12 @@ export const ChessBoardProvider = ({
   const [board, setBoard] = useState(initialBoard);
 
   const movePiece = useCallback(
-    (
-      from: { row: number; column: number },
-      to: { row: number; column: number }
-    ) => {
+    (from: ChessSquareState, to: ChessSquareState) => {
       setBoard((currentBoard) => {
         const boardClone = currentBoard.map((row) => [...row]);
-        const fromState = boardClone[from.row][from.column];
-        const toState = boardClone[to.row][to.column];
-
-        if (fromState.status === "empty") {
-          return currentBoard;
-        }
-
-        if (toState.status === "occupied") {
-          return currentBoard;
-        }
 
         boardClone[from.row][from.column] = { status: "empty" };
-        boardClone[to.row][to.column] = {
-          status: "occupied",
-          piece: fromState.piece,
-        };
+        boardClone[to.row][to.column] = from.status;
 
         return boardClone;
       });
@@ -100,17 +112,16 @@ export const ChessBoardProvider = ({
     []
   );
 
-  const [clickedSquare, setClickedSquare] = useState<{
-    row: number;
-    column: number;
-  } | null>(null);
+  const [clickedSquare, setClickedSquare] = useState<ChessSquareState | null>(
+    null
+  );
 
   const trackClick = (row: number, column: number) => {
     if (clickedSquare) {
-      movePiece(clickedSquare, { row, column });
+      movePiece(clickedSquare, { row, column, status: board[row][column] });
       setClickedSquare(null);
     } else if (board[row][column].status === "occupied") {
-      setClickedSquare({ row, column });
+      setClickedSquare({ row, column, status: board[row][column] });
     }
   };
 
