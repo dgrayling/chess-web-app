@@ -1,8 +1,8 @@
 import React from "react";
-import type { ChessSquareState } from "../types/chess";
+import type { ChessSquareStatus } from "../types/chess";
 
 export type ChessBoardContextType = {
-  board: ChessSquareState[][];
+  board: ChessSquareStatus[][];
   movePiece: (
     from: { row: number; column: number },
     to: { row: number; column: number }

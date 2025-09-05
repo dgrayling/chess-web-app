@@ -1,5 +1,5 @@
 import { useContext } from "react";
-import type { ChessSquareState } from "../types/chess";
+import type { ChessSquareStatus } from "../types/chess";
 import {
   ChessBoardContext,
   type ChessBoardContextType,
@@ -27,16 +27,12 @@ const pieceImages = {
   },
 } as const;
 
-function convertChessSquareStateToImage(state: ChessSquareState) {
-  switch (state.status) {
-    case "occupied": {
-      const color = state.piece.color as keyof typeof pieceImages;
-      const type = state.piece.type as keyof (typeof pieceImages)[typeof color];
-      return filePathPrefix + pieceImages[color][type];
-    }
-    default:
-      return undefined;
-  }
+function convertChessSquareStateToImage(state: ChessSquareStatus) {
+  if (!state.occupied) return undefined;
+
+  const color = state.piece.color as keyof typeof pieceImages;
+  const type = state.piece.type as keyof (typeof pieceImages)[typeof color];
+  return filePathPrefix + pieceImages[color][type];
 }
 
 const style = {

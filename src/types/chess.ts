@@ -1,11 +1,25 @@
-export type PieceType = "Pawn" | "Rook" | "Knight" | "Bishop" | "Queen" | "King";
+export const boardSize = 8;
+
+export type PieceType =
+  | "Pawn"
+  | "Rook"
+  | "Knight"
+  | "Bishop"
+  | "Queen"
+  | "King";
 export type PieceColor = "White" | "Black";
 
-export type ChessSquareState =
-  | { status: "empty" }
-  | { status: "occupied"; piece: { type: PieceType; color: PieceColor } };
+export type ChessSquareStatus =
+  | { occupied: false }
+  | { occupied: true; piece: { type: PieceType; color: PieceColor } };
 
-export type BoardState = ChessSquareState[][];
+export type BoardState = ChessSquareStatus[][];
+
+export type ChessSquareState = {
+  row: number;
+  column: number;
+  status: ChessSquareStatus;
+};
 
 export interface ChessBoardContextType {
   board: BoardState;
@@ -16,6 +30,6 @@ export interface ChessBoardContextType {
   ) => void;
 }
 
-export const initialBoard: BoardState = Array(8).fill(null).map(() => 
-  Array(8).fill({ status: 'empty' } as const)
-);
+export const initialBoard: BoardState = Array(boardSize)
+  .fill(null)
+  .map(() => Array(8).fill({ status: "empty" } as const));
