@@ -1,7 +1,8 @@
-import { useCallback, useState } from "react";
+import { useState } from "react";
 import { ChessBoardContext } from "../components/ChessBoardContext";
 import {
   boardSize,
+  type ChessSquareState,
   type ChessSquareStatus,
   type PieceColor,
   type PieceType,
@@ -70,31 +71,38 @@ export const ChessBoardProvider = ({
 }) => {
   const [board, setBoard] = useState(initialBoard);
 
-  const [selectedSquare, setSelectedSquare] = useState<{row: number, column: number} | null>(null);
+  const movePiece = (
+    from: { row: number; column: number },
+    to: { row: number; column: number }
+  ): boolean => {
+    let success = false;
 
-  const movePiece = useCallback(
-    (from: { row: number; column: number }, to: { row: number; column: number }) => {
-      setBoard((currentBoard) => {
-        const boardClone = currentBoard.map((row) => [...row]);
-        const fromPiece = boardClone[from.row][from.column];
-        
-        if (fromPiece.occupied) {
-          boardClone[from.row][from.column] = { occupied: false };
-          boardClone[to.row][to.column] = fromPiece;
-        }
+    setBoard((currentBoard) => {
+      const boardClone = currentBoard.map((row) => [...row]);
+      const fromPiece = boardClone[from.row][from.column];
 
-        return boardClone;
-      });
-    },
-    []
-  );
+      if (fromPiece.occupied) {
+        boardClone[from.row][from.column] = { occupied: false };
+        boardClone[to.row][to.column] = fromPiece;
+        success = true;
+      }
 
-  const trackClick = (row: number, column: number) => {
-    if (selectedSquare) {
-      movePiece(selectedSquare, { row, column });
-      setSelectedSquare(null);
-    } else if (board[row][column].occupied) {
-      setSelectedSquare({ row, column });
+      return boardClone;
+    });
+
+    return success;
+  };
+
+  const [previousSquare, setPreviousSquare] = useState<{
+    chessSquareState: ChessSquareState;
+  } | null>(null);
+
+  const trackClick = (chessSquareState: ChessSquareState) => {
+    if (previousSquare) {
+      movePiece(previousSquare.chessSquareState, chessSquareState);
+      setPreviousSquare(null);
+    } else {
+      setPreviousSquare({ chessSquareState });
     }
   };
 
