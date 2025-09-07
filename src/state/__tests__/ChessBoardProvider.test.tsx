@@ -10,8 +10,12 @@ const TestComponent = () => {
   // Move a piece when component mounts
   React.useEffect(() => {
     // Find the white rook at (7,0) and move it to (5,0)
-    if (board[7][0].status === 'occupied' && board[7][0].piece.type === 'Rook') {
-      movePiece({ row: 7, column: 0 }, { row: 5, column: 0 });
+    const square = board[7][0];
+    if (square.occupied && square.piece.type === 'Rook') {
+      movePiece(
+        { row: 7, column: 0 },
+        { row: 5, column: 0 }
+      );
     }
   }, [board, movePiece]);
 

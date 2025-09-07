@@ -2,7 +2,6 @@ import { useCallback, useState } from "react";
 import { ChessBoardContext } from "../components/ChessBoardContext";
 import {
   boardSize,
-  type ChessSquareState,
   type ChessSquareStatus,
   type PieceColor,
   type PieceType,
@@ -64,18 +63,6 @@ const generateBoard = () => {
 
 const initialBoard = generateBoard();
 
-function determineMoveValidity(
-  fromState: ChessSquareState,
-  toState: ChessSquareState
-) {
-  // Rooks can move horizontally and vertically
-  if (fromState.status.occupied && fromState.status.piece.type === "Rook") {
-    console.log("hello");
-  }
-
-  return true;
-}
-
 export const ChessBoardProvider = ({
   children,
 }: {
@@ -83,13 +70,18 @@ export const ChessBoardProvider = ({
 }) => {
   const [board, setBoard] = useState(initialBoard);
 
+  const [selectedSquare, setSelectedSquare] = useState<{row: number, column: number} | null>(null);
+
   const movePiece = useCallback(
-    (from: ChessSquareState, to: ChessSquareState) => {
+    (from: { row: number; column: number }, to: { row: number; column: number }) => {
       setBoard((currentBoard) => {
         const boardClone = currentBoard.map((row) => [...row]);
-
-        boardClone[from.row][from.column] = { occupied: false };
-        boardClone[to.row][to.column] = from.status;
+        const fromPiece = boardClone[from.row][from.column];
+        
+        if (fromPiece.occupied) {
+          boardClone[from.row][from.column] = { occupied: false };
+          boardClone[to.row][to.column] = fromPiece;
+        }
 
         return boardClone;
       });
@@ -97,16 +89,12 @@ export const ChessBoardProvider = ({
     []
   );
 
-  const [clickedSquare, setClickedSquare] = useState<ChessSquareState | null>(
-    null
-  );
-
   const trackClick = (row: number, column: number) => {
-    if (clickedSquare) {
-      movePiece(clickedSquare, { row, column, status: board[row][column] });
-      setClickedSquare(null);
+    if (selectedSquare) {
+      movePiece(selectedSquare, { row, column });
+      setSelectedSquare(null);
     } else if (board[row][column].occupied) {
-      setClickedSquare({ row, column, status: board[row][column] });
+      setSelectedSquare({ row, column });
     }
   };
 
