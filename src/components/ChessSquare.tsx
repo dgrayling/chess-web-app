@@ -6,7 +6,8 @@ import {
 } from "./ChessBoardContext";
 import type { ChessSquareImmutable } from "./ChessGrid";
 
-const filePathPrefix = "/src/assets/chess-pieces/";
+// Using public directory for assets to ensure they're copied as-is during build
+const filePathPrefix = "/chess-web-app/chess-pieces/";
 
 const pieceImages = {
   White: {
