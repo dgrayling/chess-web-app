@@ -93,16 +93,16 @@ export const ChessBoardProvider = ({
     return success;
   };
 
-  const [previousSquare, setPreviousSquare] = useState<{
-    chessSquareState: ChessSquareState;
-  } | null>(null);
+  const [previous, setLastClicked] = useState<ChessSquareState | null>(null);
 
-  const trackClick = (chessSquareState: ChessSquareState) => {
-    if (previousSquare) {
-      movePiece(previousSquare.chessSquareState, chessSquareState);
-      setPreviousSquare(null);
+  const trackClick = (current: ChessSquareState) => {
+    if (current.status.occupied) {
+      setLastClicked(current);
+    } else if (!current.status.occupied && previous) {
+      movePiece(previous, current);
+      setLastClicked(null);
     } else {
-      setPreviousSquare({ chessSquareState });
+      setLastClicked(current);
     }
   };
 
