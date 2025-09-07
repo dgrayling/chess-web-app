@@ -64,6 +64,56 @@ const generateBoard = () => {
 
 const initialBoard = generateBoard();
 
+const validateMove = (from: ChessSquareState, to: ChessSquareState) => {
+  // Only move a piece if there is a piece to move
+  if (!from.status.occupied) return false;
+
+  // Don't kill your own team
+  if (to.status.occupied && from.status.piece?.color === to.status.piece?.color)
+    return false;
+
+  const dx = from.column - to.column;
+  const dy = from.row - to.row;
+
+  console.log(dx, dy);
+
+  switch (from.status.piece?.type) {
+    case "Rook":
+      return (dx === 0 && dy !== 0) || (dy === 0 && dx !== 0);
+
+    case "Bishop":
+      return Math.abs(dx) === Math.abs(dy) && dx !== 0;
+
+    case "Queen":
+      return (
+        (dx === 0 && dy !== 0) ||
+        (dy === 0 && dx !== 0) ||
+        (Math.abs(dx) === Math.abs(dy) && dx !== 0)
+      );
+
+    case "Knight":
+      return (
+        (Math.abs(dx) === 2 && Math.abs(dy) === 1) ||
+        (Math.abs(dx) === 1 && Math.abs(dy) === 2)
+      );
+
+    case "King":
+      return Math.max(Math.abs(dx), Math.abs(dy)) === 1;
+
+    // Move forward for white, backward for black, 2 steps on first move
+    case "Pawn":
+      if (from.status.piece?.color === "White") {
+        return (
+          (dy === 1 && dx === 0) || (dy === 2 && dx === 0 && from.row === 6)
+        );
+      } else {
+        return (
+          (dy === -1 && dx === 0) || (dy === -2 && dx === 0 && from.row === 1)
+        );
+      }
+  }
+};
+
 export const ChessBoardProvider = ({
   children,
 }: {
@@ -71,19 +121,15 @@ export const ChessBoardProvider = ({
 }) => {
   const [board, setBoard] = useState(initialBoard);
 
-  const movePiece = (
-    from: { row: number; column: number },
-    to: { row: number; column: number }
-  ): boolean => {
+  const movePiece = (from: ChessSquareState, to: ChessSquareState): boolean => {
     let success = false;
 
     setBoard((currentBoard) => {
-      const boardClone = currentBoard.map((row) => [...row]);
-      const fromPiece = boardClone[from.row][from.column];
+      const boardClone = [...currentBoard];
 
-      if (fromPiece.occupied) {
+      if (validateMove(from, to)) {
         boardClone[from.row][from.column] = { occupied: false };
-        boardClone[to.row][to.column] = fromPiece;
+        boardClone[to.row][to.column] = from.status;
         success = true;
       }
 
@@ -98,7 +144,7 @@ export const ChessBoardProvider = ({
   const trackClick = (current: ChessSquareState) => {
     if (current.status.occupied) {
       setLastClicked(current);
-    } else if (!current.status.occupied && previous) {
+    } else if (previous) {
       movePiece(previous, current);
       setLastClicked(null);
     } else {
