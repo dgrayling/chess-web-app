@@ -3,10 +3,7 @@ import type { ChessSquareState, ChessSquareStatus } from "../types/chess";
 
 export type ChessBoardContextType = {
   board: ChessSquareStatus[][];
-  movePiece: (
-    from: { row: number; column: number },
-    to: { row: number; column: number }
-  ) => void;
+  movePiece: (from: ChessSquareState, to: ChessSquareState) => void;
   trackClick: (chessSquareState: ChessSquareState) => void;
 };
 

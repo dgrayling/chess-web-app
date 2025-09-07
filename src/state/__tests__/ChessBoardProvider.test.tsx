@@ -1,20 +1,20 @@
-import React from 'react';
-import { render } from '@testing-library/react';
-import { ChessBoardProvider } from '../ChessBoardProvider';
-import { ChessBoardContext } from '../../components/ChessBoardContext';
+import { render } from "@testing-library/react";
+import React from "react";
+import { ChessBoardContext } from "../../components/ChessBoardContext";
+import { ChessBoardProvider } from "../ChessBoardProvider";
 
 // Test component that uses the context
 const TestComponent = () => {
   const { board, movePiece } = React.useContext(ChessBoardContext);
-  
+
   // Move a piece when component mounts
   React.useEffect(() => {
     // Find the white rook at (7,0) and move it to (5,0)
     const square = board[7][0];
-    if (square.occupied && square.piece.type === 'Rook') {
+    if (square.occupied && square.piece.type === "Rook") {
       movePiece(
-        { row: 7, column: 0 },
-        { row: 5, column: 0 }
+        { row: 7, column: 0, status: square },
+        { row: 5, column: 0, status: square }
       );
     }
   }, [board, movePiece]);
@@ -22,8 +22,8 @@ const TestComponent = () => {
   return null;
 };
 
-describe('ChessBoardProvider', () => {
-  it('should move a piece when movePiece is called', () => {
+describe("ChessBoardProvider", () => {
+  it("should move a piece when movePiece is called", () => {
     render(
       <ChessBoardProvider>
         <TestComponent />
