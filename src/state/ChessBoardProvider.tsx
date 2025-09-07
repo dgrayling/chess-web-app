@@ -142,9 +142,7 @@ export const ChessBoardProvider = ({
   const [previous, setLastClicked] = useState<ChessSquareState | null>(null);
 
   const trackClick = (current: ChessSquareState) => {
-    if (current.status.occupied) {
-      setLastClicked(current);
-    } else if (previous) {
+    if (previous) {
       movePiece(previous, current);
       setLastClicked(null);
     } else {
