@@ -100,16 +100,32 @@ const validateMove = (from: ChessSquareState, to: ChessSquareState) => {
     case "King":
       return Math.max(Math.abs(dx), Math.abs(dy)) === 1;
 
-    // Move forward for white, backward for black, 2 steps on first move
+    // Move forward for white, backward for black, 2 steps on first move, capture diagonally
     case "Pawn":
       if (from.status.piece?.color === "White") {
-        return (
-          (dy === 1 && dx === 0) || (dy === 2 && dx === 0 && from.row === 6)
-        );
+        if (!to.status.occupied) {
+          return (
+            (dy === 1 && dx === 0) || (dy === 2 && dx === 0 && from.row === 6)
+          );
+        } else {
+          return (
+            to.status.piece?.color === "Black" &&
+            dy === 1 &&
+            (dx === 1 || dx === -1)
+          );
+        }
       } else {
-        return (
-          (dy === -1 && dx === 0) || (dy === -2 && dx === 0 && from.row === 1)
-        );
+        if (!to.status.occupied) {
+          return (
+            (dy === -1 && dx === 0) || (dy === -2 && dx === 0 && from.row === 1)
+          );
+        } else {
+          return (
+            to.status.piece?.color === "White" &&
+            dy === -1 &&
+            (dx === 1 || dx === -1)
+          );
+        }
       }
   }
 };
