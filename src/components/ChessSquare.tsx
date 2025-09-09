@@ -1,4 +1,4 @@
-import { useContext } from "react";
+import { useContext, type JSX } from "react";
 import type { ChessSquareStatus } from "../types/chess";
 import {
   ChessBoardContext,
@@ -20,28 +20,36 @@ import white_queen from "../assets/chess_pieces/white_queen.svg";
 import white_rook from "../assets/chess_pieces/white_rook.svg";
 
 const pieceStyle = {
-  width: '80%',
-  height: '80%',
-  display: 'flex',
-  justifyContent: 'center',
-  alignItems: 'center',
-  margin: 'auto',
-  userSelect: 'none',
-  pointerEvents: 'none'
+  width: "80%",
+  height: "80%",
+  display: "flex",
+  justifyContent: "center",
+  alignItems: "center",
+  margin: "auto",
+  userSelect: "none",
+  pointerEvents: "none",
 } as const;
 
 const PieceSVG = ({ piece }: { piece: string }) => {
   const pieces: Record<string, JSX.Element> = {
     black_pawn: <img src={black_pawn} alt="Black Pawn" style={pieceStyle} />,
     black_rook: <img src={black_rook} alt="Black Rook" style={pieceStyle} />,
-    black_knight: <img src={black_knight} alt="Black Knight" style={pieceStyle} />,
-    black_bishop: <img src={black_bishop} alt="Black Bishop" style={pieceStyle} />,
+    black_knight: (
+      <img src={black_knight} alt="Black Knight" style={pieceStyle} />
+    ),
+    black_bishop: (
+      <img src={black_bishop} alt="Black Bishop" style={pieceStyle} />
+    ),
     black_queen: <img src={black_queen} alt="Black Queen" style={pieceStyle} />,
     black_king: <img src={black_king} alt="Black King" style={pieceStyle} />,
     white_pawn: <img src={white_pawn} alt="White Pawn" style={pieceStyle} />,
     white_rook: <img src={white_rook} alt="White Rook" style={pieceStyle} />,
-    white_knight: <img src={white_knight} alt="White Knight" style={pieceStyle} />,
-    white_bishop: <img src={white_bishop} alt="White Bishop" style={pieceStyle} />,
+    white_knight: (
+      <img src={white_knight} alt="White Knight" style={pieceStyle} />
+    ),
+    white_bishop: (
+      <img src={white_bishop} alt="White Bishop" style={pieceStyle} />
+    ),
     white_queen: <img src={white_queen} alt="White Queen" style={pieceStyle} />,
     white_king: <img src={white_king} alt="White King" style={pieceStyle} />,
   };
@@ -59,23 +67,21 @@ function getPieceComponent(state: ChessSquareStatus) {
   return <PieceSVG piece={pieceKey} />;
 }
 
-const style = {
-  background: "#f0d9b5",
-  display: 'flex',
-  justifyContent: 'center',
-  alignItems: 'center',
-  width: '100%',
-  height: '100%',
-  boxSizing: 'border-box',
-  position: 'relative',
-};
-
 export default function ChessSquare({ row, column }: ChessSquareImmutable) {
   const context = useContext<ChessBoardContextType>(ChessBoardContext);
 
   return (
     <div
-      style={style}
+      style={{
+        background: "#f0d9b5",
+        display: "flex",
+        justifyContent: "center",
+        alignItems: "center",
+        width: "100%",
+        height: "100%",
+        boxSizing: "border-box",
+        position: "relative",
+      }}
       onClick={() =>
         context.trackClick({
           row,
