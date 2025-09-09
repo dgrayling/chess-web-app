@@ -6,34 +6,46 @@ import {
 } from "./ChessBoardContext";
 import type { ChessSquareImmutable } from "./ChessGrid";
 
-// Using public directory for assets to ensure they're copied as-is during build
-const filePathPrefix = "/chess-web-app/chess-pieces/";
+import black_bishop from "../assets/chess_pieces/black_bishop.svg";
+import black_king from "../assets/chess_pieces/black_king.svg";
+import black_knight from "../assets/chess_pieces/black_knight.svg";
+import black_pawn from "../assets/chess_pieces/black_pawn.svg";
+import black_queen from "../assets/chess_pieces/black_queen.svg";
+import black_rook from "../assets/chess_pieces/black_rook.svg";
+import white_bishop from "../assets/chess_pieces/white_bishop.svg";
+import white_king from "../assets/chess_pieces/white_king.svg";
+import white_knight from "../assets/chess_pieces/white_knight.svg";
+import white_pawn from "../assets/chess_pieces/white_pawn.svg";
+import white_queen from "../assets/chess_pieces/white_queen.svg";
+import white_rook from "../assets/chess_pieces/white_rook.svg";
 
-const pieceImages = {
-  White: {
-    Pawn: "wP.svg",
-    Rook: "wR.svg",
-    Knight: "wN.svg",
-    Bishop: "wB.svg",
-    Queen: "wQ.svg",
-    King: "wK.svg",
-  },
-  Black: {
-    Pawn: "bP.svg",
-    Rook: "bR.svg",
-    Knight: "bN.svg",
-    Bishop: "bB.svg",
-    Queen: "bQ.svg",
-    King: "bK.svg",
-  },
-} as const;
+const PieceSVG = ({ piece }: { piece: string }) => {
+  const pieces: Record<string, JSX.Element> = {
+    black_pawn: <img src={black_pawn} alt="Black Pawn" />,
+    black_rook: <img src={black_rook} alt="Black Rook" />,
+    black_knight: <img src={black_knight} alt="Black Knight" />,
+    black_bishop: <img src={black_bishop} alt="Black Bishop" />,
+    black_queen: <img src={black_queen} alt="Black Queen" />,
+    black_king: <img src={black_king} alt="Black King" />,
+    white_pawn: <img src={white_pawn} alt="White Pawn" />,
+    white_rook: <img src={white_rook} alt="White Rook" />,
+    white_knight: <img src={white_knight} alt="White Knight" />,
+    white_bishop: <img src={white_bishop} alt="White Bishop" />,
+    white_queen: <img src={white_queen} alt="White Queen" />,
+    white_king: <img src={white_king} alt="White King" />,
+  };
 
-function convertChessSquareStateToImage(state: ChessSquareStatus) {
-  if (!state.occupied) return undefined;
+  return pieces[piece] || null;
+};
 
-  const color = state.piece.color as keyof typeof pieceImages;
-  const type = state.piece.type as keyof (typeof pieceImages)[typeof color];
-  return filePathPrefix + pieceImages[color][type];
+function getPieceKey(color: string, type: string): string {
+  return `${color.toLowerCase()}_${type.toLowerCase()}`;
+}
+
+function getPieceComponent(state: ChessSquareStatus) {
+  if (!state.occupied) return null;
+  const pieceKey = getPieceKey(state.piece.color, state.piece.type);
+  return <PieceSVG piece={pieceKey} />;
 }
 
 const style = {
@@ -42,8 +54,6 @@ const style = {
 
 export default function ChessSquare({ row, column }: ChessSquareImmutable) {
   const context = useContext<ChessBoardContextType>(ChessBoardContext);
-
-  const imageSrc = convertChessSquareStateToImage(context.board[row][column]);
 
   return (
     <div
@@ -56,7 +66,7 @@ export default function ChessSquare({ row, column }: ChessSquareImmutable) {
         })
       }
     >
-      {imageSrc ? <img src={imageSrc} alt=""></img> : null}
+      {getPieceComponent(context.board[row][column])}
     </div>
   );
 }
