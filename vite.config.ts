@@ -4,10 +4,7 @@ import path from "path";
 import { defineConfig } from "vite";
 
 // https://vite.dev/config/
-export default defineConfig(({ mode }) => {
-  // Load env file based on `mode` in the current working directory
-  // const env = loadEnv(mode, process.cwd(), "");
-
+export default defineConfig(() => {
   // Get the current git commit hash and message
   const commitHash = execSync("git rev-parse --short HEAD").toString().trim();
   const commitMessage = execSync("git log -1 --pretty=%B").toString().trim();
