@@ -1,5 +1,8 @@
 import React from "react";
-import type { ChessSquareState, ChessSquareStatus } from "../types/chess";
+import type {
+  ChessSquareState,
+  ChessSquareStatus,
+} from "../../../common/types/chess";
 
 export type ChessBoardContextType = {
   board: ChessSquareStatus[][];

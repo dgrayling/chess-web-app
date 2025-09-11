@@ -1,12 +1,13 @@
-import { useState } from "react";
-import { ChessBoardContext } from "../components/ChessBoardContext";
+import { useEffect, useState } from "react";
+import useWebSocket from "react-use-websocket";
 import {
   boardSize,
   type ChessSquareState,
   type ChessSquareStatus,
   type PieceColor,
   type PieceType,
-} from "../types/chess";
+} from "../../../common/types/chess";
+import { ChessBoardContext } from "../components/ChessBoardContext";
 
 const positionState: [number, number, PieceColor, PieceType][] = [
   [7, 0, "White", "Rook"],
@@ -135,22 +136,41 @@ export const ChessBoardProvider = ({
 }: {
   children: React.ReactNode;
 }) => {
+  const { sendMessage, lastMessage, readyState } = useWebSocket(
+    "ws://localhost:3000/"
+  );
+
+  //eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const [messageHistory, setMessageHistory] = useState<MessageEvent<any>[]>([]);
+
+  useEffect(() => {
+    if (lastMessage !== null) {
+      setMessageHistory((prev) => prev.concat(lastMessage));
+
+      console.log("lastMessage", lastMessage);
+      if (typeof lastMessage.data === "string") {
+        const x = JSON.parse(lastMessage.data);
+        if (x.type === "boardState") {
+          setBoard(x.data);
+        }
+      }
+    }
+  }, [lastMessage]);
+
   const [board, setBoard] = useState(initialBoard);
 
   const movePiece = (from: ChessSquareState, to: ChessSquareState): boolean => {
     let success = false;
 
-    setBoard((currentBoard) => {
-      const boardClone = [...currentBoard];
+    const fromJson = JSON.stringify(from);
+    const toJson = JSON.stringify(to);
 
-      if (validateMove(from, to)) {
-        boardClone[from.row][from.column] = { occupied: false };
-        boardClone[to.row][to.column] = from.status;
-        success = true;
-      }
-
-      return boardClone;
-    });
+    if (validateMove(from, to)) {
+      sendMessage(
+        JSON.stringify({ type: "movePiece", from: fromJson, to: toJson })
+      );
+      success = true;
+    }
 
     return success;
   };

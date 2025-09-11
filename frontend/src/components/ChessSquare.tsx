@@ -1,5 +1,5 @@
 import { useContext, type JSX } from "react";
-import type { ChessSquareStatus } from "../types/chess";
+import type { ChessSquareStatus } from "../../../common/types/chess";
 import {
   ChessBoardContext,
   type ChessBoardContextType,
@@ -90,7 +90,8 @@ export default function ChessSquare({ row, column }: ChessSquareImmutable) {
         })
       }
     >
-      {getPieceComponent(context.board[row][column])}
+      {context.board[row][column] &&
+        getPieceComponent(context.board[row][column])}
     </div>
   );
 }
