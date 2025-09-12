@@ -9,18 +9,30 @@ function App() {
     <ChessBoardProvider>
       <div
         style={{
-          backgroundColor: isProduction ? "#4CAF50" : "#FF9800",
-          color: "white",
-          textAlign: "center",
-          padding: "10px",
-          fontWeight: "bold",
-          fontSize: "1.2em",
+          display: "grid",
+          gridTemplateColumns: "1fr 2fr",
+          columnGap: "10px",
         }}
       >
-        {isProduction ? "PRODUCTION" : "DEVELOPMENT"} MODE
+        <div style={{ gridColumnStart: 1, gridColumnEnd: 2 }}>
+          <div
+            style={{
+              backgroundColor: isProduction ? "#4CAF50" : "#FF9800",
+              color: "white",
+              textAlign: "center",
+              padding: "10px",
+              fontWeight: "bold",
+              fontSize: "1.2em",
+            }}
+          >
+            Environment: {isProduction ? "PRODUCTION" : "DEVELOPMENT"}
+          </div>
+          <div>Commit: {process.env.GIT_COMMIT_MESSAGE}</div>
+        </div>
+        <div style={{ gridColumnStart: 2, gridColumnEnd: 3 }}>
+          <ChessGrid />
+        </div>
       </div>
-      <div>Commit: {process.env.GIT_COMMIT_MESSAGE}</div>
-      <ChessGrid />
     </ChessBoardProvider>
   );
 }
