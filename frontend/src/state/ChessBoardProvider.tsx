@@ -186,8 +186,14 @@ export const ChessBoardProvider = ({
     }
   };
 
+  const resetBoard = () => {
+    sendMessage(JSON.stringify({ type: "resetBoard" }));
+  };
+
   return (
-    <ChessBoardContext.Provider value={{ board, movePiece, trackClick }}>
+    <ChessBoardContext.Provider
+      value={{ board, movePiece, resetBoard, trackClick }}
+    >
       {children}
     </ChessBoardContext.Provider>
   );

@@ -13,6 +13,8 @@ fastify.get("/", { websocket: true }, function wsHandler(socket, req) {
 
   socket.on("message", (message) => {
     const data = JSON.parse(message.toString());
+
+    console.log("Message Received: ", data.type);
     switch (data.type) {
       case "boardState":
         socket.send(
@@ -32,6 +34,15 @@ fastify.get("/", { websocket: true }, function wsHandler(socket, req) {
           JSON.stringify({ type: "boardState", data: positionState })
         );
         break;
+      case "resetBoard":
+        clearAllPositions();
+        initializeBoard();
+        socket.send(
+          JSON.stringify({ type: "boardState", data: positionState })
+        );
+        break;
+      default:
+        break;
     }
   });
 
@@ -44,7 +55,7 @@ await fastify.listen({ port: 3000 });
 
 import { PieceColor, PieceType } from "../common/types/chess";
 
-const startingPosition: [number, number, PieceColor, PieceType][] = [
+const startingPositions: [number, number, PieceColor, PieceType][] = [
   [7, 0, "White", "Rook"],
   [7, 7, "White", "Rook"],
   [0, 0, "Black", "Rook"],
@@ -85,23 +96,24 @@ type ChessSquareStatus =
 
 const boardSize = 8;
 
-const initializeBoard = () => {
-  const stateMatrix: ChessSquareStatus[][] = Array.from(
-    { length: boardSize },
-    () =>
-      Array.from({ length: boardSize }, () => ({
-        occupied: false,
-      }))
+const clearAllPositions = () => {
+  positionState.forEach((row) =>
+    row.forEach((cell) => (cell.occupied = false))
   );
-
-  startingPosition.forEach(([row, column, color, type]) => {
-    stateMatrix[row][column] = {
-      occupied: true,
-      piece: { type, color },
-    };
-  });
-
-  return stateMatrix;
 };
 
-const positionState = initializeBoard();
+const initializeBoard = () => {
+  startingPositions.forEach(([row, column, color, type]) => {
+    positionState[row][column] = { occupied: true, piece: { type, color } };
+  });
+};
+
+const positionState: ChessSquareStatus[][] = Array.from(
+  { length: boardSize },
+  () =>
+    Array.from({ length: boardSize }, () => ({
+      occupied: false,
+    }))
+);
+
+initializeBoard();
