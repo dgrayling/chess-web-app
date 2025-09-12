@@ -1,4 +1,3 @@
-import { ChessBoardProvider } from "../state/ChessBoardProvider";
 import ChessSquare from "./ChessSquare";
 
 export type ChessSquareImmutable = {
@@ -21,20 +20,18 @@ const boardMatrix: ChessSquareImmutable[][] = Array.from(
 
 export default function ChessGrid() {
   return (
-    <ChessBoardProvider>
-      <div
-        style={{
-          display: "grid",
-          gridTemplateColumns: `repeat(${size}, 100px)`,
-          gridTemplateRows: `repeat(${size}, 100px)`,
-          gap: "2px",
-          background: "black",
-        }}
-      >
-        {boardMatrix.map((row) =>
-          row.map((cell) => <ChessSquare key={cell.id} {...cell} />)
-        )}
-      </div>
-    </ChessBoardProvider>
+    <div
+      style={{
+        display: "grid",
+        gridTemplateColumns: `repeat(${size}, 100px)`,
+        gridTemplateRows: `repeat(${size}, 100px)`,
+        gap: "2px",
+        background: "black",
+      }}
+    >
+      {boardMatrix.map((row) =>
+        row.map((cell) => <ChessSquare key={cell.id} {...cell} />)
+      )}
+    </div>
   );
 }
