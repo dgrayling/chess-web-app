@@ -24,12 +24,7 @@ fastify.get("/", { websocket: true }, function wsHandler(socket, req) {
       case "movePiece":
         const from = JSON.parse(data.from);
         const to = JSON.parse(data.to);
-        const row = positionState[from.row];
-        row[from.column] = { occupied: false };
-        positionState[to.row][to.column] = {
-          occupied: true,
-          piece: from.status.piece,
-        };
+        movePiece(from, to);
         socket.send(
           JSON.stringify({ type: "boardState", data: positionState })
         );
@@ -53,7 +48,7 @@ fastify.get("/", { websocket: true }, function wsHandler(socket, req) {
 
 await fastify.listen({ port: 3000 });
 
-import { PieceColor, PieceType } from "../common/types/chess";
+import { ChessSquareState, PieceColor, PieceType } from "../common/types/chess";
 
 const startingPositions: [number, number, PieceColor, PieceType][] = [
   [7, 0, "White", "Rook"],
@@ -96,24 +91,34 @@ type ChessSquareStatus =
 
 const boardSize = 8;
 
+function getIndex(row: number, col: number): number {
+  return row * 8 + col;
+}
+
 const clearAllPositions = () => {
-  positionState.forEach((row) =>
-    row.forEach((cell) => (cell.occupied = false))
-  );
+  positionState.forEach((pos) => (pos.occupied = false));
 };
 
 const initializeBoard = () => {
   startingPositions.forEach(([row, column, color, type]) => {
-    positionState[row][column] = { occupied: true, piece: { type, color } };
+    positionState[getIndex(row, column)] = {
+      occupied: true,
+      piece: { type, color },
+    };
   });
 };
 
-const positionState: ChessSquareStatus[][] = Array.from(
-  { length: boardSize },
-  () =>
-    Array.from({ length: boardSize }, () => ({
-      occupied: false,
-    }))
+const movePiece = (from: ChessSquareState, to: ChessSquareState) => {
+  positionState[getIndex(from.row, from.column)] = { occupied: false };
+  positionState[getIndex(to.row, to.column)] = {
+    occupied: true,
+    piece: from.status.piece,
+  };
+};
+
+const positionState: ChessSquareStatus[] = Array.from(
+  { length: boardSize * boardSize },
+  () => ({ occupied: false })
 );
 
 initializeBoard();

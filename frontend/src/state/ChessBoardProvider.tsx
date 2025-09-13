@@ -8,6 +8,7 @@ import {
   type PieceType,
 } from "../../../common/types/chess";
 import { ChessBoardContext } from "../components/ChessBoardContext";
+import { getIndex } from "../utils/getIndex";
 
 const positionState: [number, number, PieceColor, PieceType][] = [
   [7, 0, "White", "Rook"],
@@ -45,16 +46,13 @@ const positionState: [number, number, PieceColor, PieceType][] = [
 ];
 
 const generateBoard = () => {
-  const stateMatrix: ChessSquareStatus[][] = Array.from(
-    { length: boardSize },
-    () =>
-      Array.from({ length: boardSize }, () => ({
-        occupied: false,
-      }))
+  const stateMatrix: ChessSquareStatus[] = Array.from(
+    { length: boardSize * boardSize },
+    () => ({ occupied: false })
   );
 
   positionState.forEach(([row, column, color, type]) => {
-    stateMatrix[row][column] = {
+    stateMatrix[getIndex(row, column)] = {
       occupied: true,
       piece: { type, color },
     };
@@ -136,16 +134,14 @@ export const ChessBoardProvider = ({
 }: {
   children: React.ReactNode;
 }) => {
-  const { sendMessage, lastMessage, readyState } = useWebSocket(
-    "ws://localhost:3000/"
-  );
+  const { sendMessage, lastMessage } = useWebSocket("ws://localhost:3000/");
 
   //eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const [messageHistory, setMessageHistory] = useState<MessageEvent<any>[]>([]);
+  // const [messageHistory, setMessageHistory] = useState<MessageEvent<any>[]>([]);
 
   useEffect(() => {
     if (lastMessage !== null) {
-      setMessageHistory((prev) => prev.concat(lastMessage));
+      // setMessageHistory((prev) => prev.concat(lastMessage));
 
       console.log("lastMessage", lastMessage);
       if (typeof lastMessage.data === "string") {

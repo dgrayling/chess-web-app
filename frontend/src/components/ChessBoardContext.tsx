@@ -5,7 +5,7 @@ import type {
 } from "../../../common/types/chess";
 
 export type ChessBoardContextType = {
-  board: ChessSquareStatus[][];
+  board: ChessSquareStatus[];
   movePiece: (from: ChessSquareState, to: ChessSquareState) => void;
   resetBoard: () => void;
   trackClick: (chessSquareState: ChessSquareState) => void;

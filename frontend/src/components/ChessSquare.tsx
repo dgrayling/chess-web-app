@@ -18,6 +18,7 @@ import white_knight from "../assets/chess_pieces/white_knight.svg";
 import white_pawn from "../assets/chess_pieces/white_pawn.svg";
 import white_queen from "../assets/chess_pieces/white_queen.svg";
 import white_rook from "../assets/chess_pieces/white_rook.svg";
+import { getIndex } from "../utils/getIndex";
 
 const pieceStyle = {
   width: "80%",
@@ -86,12 +87,12 @@ export default function ChessSquare({ row, column }: ChessSquareImmutable) {
         context.trackClick({
           row,
           column,
-          status: context.board[row][column],
+          status: context.board[getIndex(row, column)],
         })
       }
     >
-      {context.board[row][column] &&
-        getPieceComponent(context.board[row][column])}
+      {context.board[getIndex(row, column)] &&
+        getPieceComponent(context.board[getIndex(row, column)])}
     </div>
   );
 }
